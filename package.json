@@ -1,0 +1,24 @@
+{
+  "name": "hackchat-electron",
+  "version": "0.1.0",
+  "description": "hack.chat client for electron",
+  "repository": "https://github.com/OpSimple/hackchat-electron",
+  "author": "OpSimple",
+  "license": "MIT",
+  "main": "main.js",
+  "icon": "icon.png",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron-prompt": "^1.3.1",
+    "electron-context-menu": "^0.13.0"
+  },
+  "keywords": [
+    "hack.chat",
+    "chat",
+    "client",
+    "online",
+    "electron"
+  ]
+}
