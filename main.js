@@ -16,6 +16,7 @@ const iconpath = __dirname + '/icon.png';
 
 // Set NO for menubars
 Menu.setApplicationMenu(null);
+
 // Begin app stuffs
 let window;
 app.on('ready', () => {
@@ -25,10 +26,11 @@ app.on('ready', () => {
         height: 900,
         icon: iconpath,
         webPreferences: {
-          nodeIntegration: false,
-          nativeWindowOpen: true
+          nodeIntegration: false
         }
     });
+    // lets load home page
+    loadHome();
 
     // Normal right click based context menu
     conextmenu({
@@ -38,21 +40,28 @@ app.on('ready', () => {
           click: () => {
             loadHome();
           }
-        },
+        }
+      ],
+      menu: actions => [
+        actions.separator(),
+        actions.cut(),
+        actions.copy(),
+        actions.paste(),
+        actions.copyLink(),
+        actions.separator()
+      ],
+      append: (defaultActions, params, browserWindow) => [
         {
-          label: 'Inspect Element',
+          label: 'Dev Tools',
           click: () => {
             window.webContents.openDevTools();
           }
         }
       ]
     });
-    // lets load home page
-    loadHome();
 
     // Handle the hack.chat links and others differently
-    window.webContents.on('new-window', (ev, url , frname,
-       disp, opts, addftrs, ref) => {
+    window.webContents.on('new-window', (ev, url , frname, disp, opts, addftrs, ref) => {
         ev.preventDefault();
         if(url.split('/')[2] === PAGE.split('/')[2]) {
             prompt({
