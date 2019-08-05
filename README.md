@@ -16,7 +16,7 @@ Getting Started
 
 ## Running
 
-1. Make sure you've `npm` and `electron` binary in `PATH`.
+1. Make sure you've `npm` and `electron` binaries in `PATH`.
 1. Open the terminal and navigate to the folder/dir you wish to install this client.
 1. Clone the repository
     ```bash
@@ -51,7 +51,7 @@ Features
 
 - You need to enter the channel name, nickname and password in the channel input box prompted at the homepage as `channel#nickname#password`.
 - You can right click anywhere in the app to get an option to open developer tools and navigate back to homepage.
-- *NEW* Now, you can inject js files into the client.js of hack.chat to alter any function of the script. You can also provide js modules to auto inject when the application starts into, `yourhome/.hackchat-electron/mods` folder/dir. You can also right-click and choose to inject a js  file on demand.
+- **NEW**  Now, you can inject js files into the client.js of hack.chat to alter any function of the script. You can also provide js modules to auto inject when the application starts into, `yourhome/.hackchat-electron/mods` folder/dir. You can also right-click and choose to inject a js  file on demand.
 
 
 TODO
