@@ -45,6 +45,14 @@ Getting Started
    ```
 1. Further, a desktop file or a link can be created for executing `main.js` with the provided icon.png.
 
+## Packaging
+
+1. Follow till step 5 of the "Running" section.
+1. Create packages for your platform (Windows, Linux, Mac) using the following command and the packages for your platform will be produced in `dist` folder/dir.
+   ```bash
+   npm run dist
+   ```
+
 
 Features
 ========
@@ -52,13 +60,13 @@ Features
 - You need to enter the channel name, nickname and password in the channel input box prompted at the homepage as `channel#nickname#password`.
 - You can right click anywhere in the app to get an option to open developer tools and navigate back to homepage.
 - **NEW**  Now, you can inject js files into the client.js of hack.chat to alter any function of the script. You can also provide js modules to auto inject when the application starts into, `yourhome/.hackchat-electron/mods` folder/dir. You can also right-click and choose to inject a js  file on demand.
-
+- **NEW**  Now, you can create packages for the app to install and run on your platform (Windows, Linux, Mac).
+- **NEW**  Now, the app can be tweaked using its config file at `yourhome/.hackchat-electron/config.json`.
 
 TODO
 ====
 
-- Add ways to provide packaging for Windows, Linux and Mac.
-- Add a way to allow insertion of js modules.
+- Checking for corrupt config files and unacceptable values from user.
 
 License
 =======

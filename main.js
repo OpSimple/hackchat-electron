@@ -8,44 +8,81 @@
 /*
   Import needed stuffs
 */
+const fs = require('fs');
+const log4js = require('log4js');
 const electron = require('electron');
 const prompt = require('electron-prompt');
 const conextmenu = require('electron-context-menu');
-const fs = require('fs');
 const { dialog, Menu, shell, app, BrowserWindow } = electron;
 
 /*
-  required constants
+  Initial config
 */
-const PAGE = 'https://hack.chat/';
-const iconpath = __dirname + '/icon.png';
-const appdir = require('os').homedir()+'/.hackchat-electron';
+const ver = '0.1.5';
+let CONFIG = {
+  version : ver,
+  page: 'https://hack.chat/',
+  icon: __dirname + '/icon.png',
+  loglevel: 'INFO',
+  width: 1200,
+  height: 900,
+  extmoddirs: []
+};
+const appdir  = require('os').homedir()+'/.hackchat-electron';
 const modsdir = appdir + '/mods';
+const logdir  = appdir + '/logs';
+const config  = appdir + '/config.json';
 
-// Set NO for menubars
-Menu.setApplicationMenu(null);
+
 // create app dir if doesn't exist
-if(!fs.existsSync(appdir)) {
+if (!fs.existsSync(appdir)) {
   fs.mkdirSync(modsdir, { recursive: true }, (err) => {
     if(err) {
       throw err;
     }
   });
+  fs.mkdirSync(logdir, { recursive: true }, (err) => {
+    if(err) {
+      throw err;
+    }
+  });
+  createConfig();
 }
+if (!fs.existsSync(config)) {
+  createConfig();
+}
+// setup the logger
+log4js.configure({
+  appenders:  { app: { type: 'file', filename: logdir+'/'+Date.now()+'.log' } },
+  categories: { default: { appenders: ['app'], level: 'error' } }
+});
+const logger = log4js.getLogger('app');
+logger.level = CONFIG.loglevel;
+logger.info('App Started ('+ver+')!');
+logger.info('appdir = ' + appdir);
+// read config
+logger.info('Reading config..');
+readConfig();
+logger.info('config = ' + JSON.stringify(CONFIG));
 
+
+// Set NO for menubars
+Menu.setApplicationMenu(null);
 // Begin app stuffs
 let window;
 app.on('ready', () => {
+  logger.info('app ready');
   // We're creating window
     window = new BrowserWindow({
-        width: 1200,
-        height: 900,
-        icon: iconpath,
+        width: CONFIG.width,
+        height: CONFIG.height,
+        icon: CONFIG.icon,
         webPreferences: {
           nodeIntegration: false
         }
     });
     // lets load home page
+    logger.info('loading homepage: '+ CONFIG.page);
     loadHome();
 
     // Normal right-click based context menu
@@ -84,12 +121,9 @@ app.on('ready', () => {
               properties: ['openFile', 'multiSelections', 'showHiddenFiles']
             });
             // inject the selected files one by one
-            for(file of files) {
-              if(file.endsWith('.js')) {
-                const js = fs.readFileSync(file, 'utf8', (err,data) => {
-                  if(err) console.log(err);
-                });
-                window.webContents.executeJavaScript(js);
+            if(files!=null) {
+              for(file of files) {
+                injectMod(file);
               }
             }
           }
@@ -107,7 +141,7 @@ app.on('ready', () => {
     // Handle the hack.chat links and others differently
     window.webContents.on('new-window', (ev, url , frname, disp, opts, addftrs, ref) => {
         ev.preventDefault();
-        if(url.split('/')[2] === PAGE.split('/')[2]) {
+        if(url.split('/')[2] === CONFIG.page.split('/')[2]) {
             prompt({
               title: 'Nickname',
               label: 'Enter a nickname:',
@@ -120,7 +154,10 @@ app.on('ready', () => {
               if(r != null){
                 window.loadURL(url+'#'+r);
               }
-            }).catch(console.error);
+            }).catch((err) => {
+              logger.error('Error while calling prompt: '+err);
+              console.log(err);
+            });
         } else {
             shell.openExternal(url);
         }
@@ -128,29 +165,43 @@ app.on('ready', () => {
     // load modules to inject into hackchat client.js script
     window.webContents.on('dom-ready', (ev) => {
       // read file recursively and inject them one by one
+      logger.info("Loading early modules..");
+
       fs.readdirSync(modsdir, 'utf8', (err, files) => {
         if(!err) {
           for(file of files){
-            if(file.endsWith('.js')) {
-              const js = fs.readFileSync( modsdir + '/' + file, 'utf8', (err,data) => {
-                if(err) console.log(err);
-              });
-              window.webContents.executeJavaScript(js);
-            }
+            injectMod(modsdir + '/' + file);
           }
         }
       });
+      // load mods from user given dirs
+      if(CONFIG.extmoddirs != null) {
+        for(dir in CONFIG.extmoddirs) {
+          fs.readdirSync(dir, 'utf8', (err, files) => {
+            if(!err) {
+              for(file of files){
+                injectMod(modsdir + '/' + file);
+              }
+            }
+          });
+        }
+      }
     });
     window.on('closed', () => {
         window = null;
     });
 });
 
+app.on('quit', () => {
+  logger.info('app quits');
+});
+
 /*
   Loading home is long and required more than once
 */
 function loadHome() {
-  window.loadURL(PAGE);
+  if(window == null) return;
+  window.loadURL(CONFIG.page);
   prompt({
     title: 'Channel',
     label: 'Enter the channel:',
@@ -160,7 +211,59 @@ function loadHome() {
     }
   }, window).then((r) => {
     if(r != null){
-      window.loadURL(PAGE+'?'+r);
+      window.loadURL(CONFIG.page+'?'+r);
     }
-  }).catch(console.error);
+  }).catch( (err) => {
+    logger.error('Error while calling prompt: '+err);
+    console.log(err);
+  });
+}
+
+/*
+  Inject a js file
+*/
+function injectMod(file) {
+  if(window == null) return;
+  if(file.endsWith('.js')) {
+    const js = fs.readFileSync(file, 'utf8', (err,data) => {
+      if(err) {
+        logger.error('Error while trying to read file :' + file);
+        console.log(err);
+        return;
+      }
+    });
+    logger.info('Mod Loaded: ' + file);
+    window.webContents.executeJavaScript(js);
+  }
+}
+
+/*
+  Read config
+*/
+function readConfig(){
+  const data = fs.readFileSync( config, 'utf8', (err,data) => {
+    if(err) {
+      logger.fatal('Error while trying to read config file!\n'+err);
+      console.log(err);
+      return;
+    }
+  });
+
+  try {
+    CONFIG = JSON.parse(data);
+    CONFIG.version = ver;
+  } catch (err) {
+    logger.fatal('Error while trying to read config file!\n'+err);
+    console.log(err);
+    return;
+  }
+
+  // TODO checking values
+}
+
+/*
+  Create config
+*/
+function createConfig() {
+  fs.writeFileSync(config, JSON.stringify(CONFIG));
 }
