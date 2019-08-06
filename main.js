@@ -19,10 +19,10 @@ const { dialog, Menu, shell, app, BrowserWindow } = electron;
   Initial config
 */
 const ver = '0.1.5';
+const iconpath = __dirname + '/icon.png';
 let CONFIG = {
   version : ver,
   page: 'https://hack.chat/',
-  icon: __dirname + '/icon.png',
   loglevel: 'INFO',
   width: 1200,
   height: 900,
@@ -76,7 +76,7 @@ app.on('ready', () => {
     window = new BrowserWindow({
         width: CONFIG.width,
         height: CONFIG.height,
-        icon: CONFIG.icon,
+        icon: iconpath,
         webPreferences: {
           nodeIntegration: false
         }

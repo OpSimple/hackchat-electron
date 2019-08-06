@@ -6,6 +6,8 @@ hack.chat is a minimal, distraction-free, accountless, logless, disappearing cha
 It also has an official web hosting at [hack.chat](https://hack.chat) where anyone can have a secure, distraction-free, accountless and logless chat with their group for any discussion, online meetings, or just for gossip with their internet-pals.
 This projects provides a simple electron based desktop client for the official hack.chat but it can be used for any hack.chat server through minor tweaks in the `main.js` script.
 
+
+
 Getting Started
 ===============
 
@@ -52,7 +54,6 @@ Getting Started
    ```bash
    npm run dist
    ```
-
 
 Features
 ========
