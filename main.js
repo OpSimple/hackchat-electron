@@ -155,7 +155,7 @@ app.on('ready', () => {
                 window.loadURL(url+'#'+r);
               }
             }).catch((err) => {
-              logger.error('Error while calling prompt: '+err);
+              logger.error('Error while calling prompt: '+ err.name + ' - ' +err.message);
               console.log(err);
             });
         } else {
@@ -167,23 +167,32 @@ app.on('ready', () => {
       // read file recursively and inject them one by one
       logger.info("Loading early modules..");
 
-      fs.readdirSync(modsdir, 'utf8', (err, files) => {
-        if(!err) {
-          for(file of files){
-            injectMod(modsdir + '/' + file);
-          }
+      const files = fs.readdirSync(modsdir, 'utf8', (err, data) => {
+        if(err) {
+          console.log(err);
+          logger.error('Error while trying to read the contents of modules dir :' + err.name + ' - ' +err.message);
         }
       });
+      if(files!=null) {
+        for(file of files){
+          injectMod(modsdir + '/' + file);
+        }
+      }
+
       // load mods from user given dirs
       if(CONFIG.extmoddirs != null) {
         for(dir in CONFIG.extmoddirs) {
-          fs.readdirSync(dir, 'utf8', (err, files) => {
-            if(!err) {
-              for(file of files){
-                injectMod(modsdir + '/' + file);
-              }
+          const files = fs.readdirSync(dir, 'utf8', (err, files) => {
+            if(err) {
+              console.log(err);
+              logger.error('Error while trying to read the contents of modules dir :' + err.name + ' - ' +err.message);
             }
           });
+          if(files!=null) {
+            for(file of files){
+              injectMod(modsdir + '/' + file);
+            }
+          }
         }
       }
     });
@@ -214,7 +223,7 @@ function loadHome() {
       window.loadURL(CONFIG.page+'?'+r);
     }
   }).catch( (err) => {
-    logger.error('Error while calling prompt: '+err);
+    logger.error('Error while calling prompt: '+err.name + ' - ' +err.message);
     console.log(err);
   });
 }
@@ -227,13 +236,15 @@ function injectMod(file) {
   if(file.endsWith('.js')) {
     const js = fs.readFileSync(file, 'utf8', (err,data) => {
       if(err) {
-        logger.error('Error while trying to read file :' + file);
+        logger.error('Error while trying to read file :' + file + ' ' + err.name + ' - ' +err.message);
         console.log(err);
         return;
       }
     });
-    logger.info('Mod Loaded: ' + file);
-    window.webContents.executeJavaScript(js);
+    if(js!=null) {
+      logger.info('Mod Loaded: ' + file);
+      window.webContents.executeJavaScript(js);
+    }
   }
 }
 
@@ -243,7 +254,7 @@ function injectMod(file) {
 function readConfig(){
   const data = fs.readFileSync( config, 'utf8', (err,data) => {
     if(err) {
-      logger.fatal('Error while trying to read config file!\n'+err);
+      logger.fatal('Error while trying to read config file!\n'+err.name + ' - ' +err.message);
       console.log(err);
       return;
     }
@@ -253,7 +264,7 @@ function readConfig(){
     CONFIG = JSON.parse(data);
     CONFIG.version = ver;
   } catch (err) {
-    logger.fatal('Error while trying to read config file!\n'+err);
+    logger.fatal('Error while trying to read config file!\n'+err.name + ' - ' +err.message);
     console.log(err);
     return;
   }
