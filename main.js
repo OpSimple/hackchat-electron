@@ -155,7 +155,7 @@ app.on('ready', () => {
                 window.loadURL(url+'#'+r);
               }
             }).catch((err) => {
-              logger.error('Error while calling prompt: '+ err.name + ' - ' +err.message);
+              logger.error('Error while calling prompt: '+ err.toString());
               console.log(err);
             });
         } else {
@@ -170,7 +170,7 @@ app.on('ready', () => {
       const files = fs.readdirSync(modsdir, 'utf8', (err, data) => {
         if(err) {
           console.log(err);
-          logger.error('Error while trying to read the contents of modules dir :' + err.name + ' - ' +err.message);
+          logger.error('Error while trying to read the contents of modules dir :' + err.toString());
         }
       });
       if(files!=null) {
@@ -185,7 +185,7 @@ app.on('ready', () => {
           const files = fs.readdirSync(dir, 'utf8', (err, files) => {
             if(err) {
               console.log(err);
-              logger.error('Error while trying to read the contents of modules dir :' + err.name + ' - ' +err.message);
+              logger.error('Error while trying to read the contents of modules dir :'+ dir + '  ' + err.toString());
             }
           });
           if(files!=null) {
@@ -223,7 +223,7 @@ function loadHome() {
       window.loadURL(CONFIG.page+'?'+r);
     }
   }).catch( (err) => {
-    logger.error('Error while calling prompt: '+err.name + ' - ' +err.message);
+    logger.error('Error while calling prompt: '+err.toString());
     console.log(err);
   });
 }
@@ -236,7 +236,7 @@ function injectMod(file) {
   if(file.endsWith('.js')) {
     const js = fs.readFileSync(file, 'utf8', (err,data) => {
       if(err) {
-        logger.error('Error while trying to read file :' + file + ' ' + err.name + ' - ' +err.message);
+        logger.error('Error while trying to read file :' + file + ' ' + err.toString());
         console.log(err);
         return;
       }
@@ -254,7 +254,7 @@ function injectMod(file) {
 function readConfig(){
   const data = fs.readFileSync( config, 'utf8', (err,data) => {
     if(err) {
-      logger.fatal('Error while trying to read config file!\n'+err.name + ' - ' +err.message);
+      logger.fatal('Error while trying to read config file!\n'+err.toString());
       console.log(err);
       return;
     }
@@ -264,7 +264,7 @@ function readConfig(){
     CONFIG = JSON.parse(data);
     CONFIG.version = ver;
   } catch (err) {
-    logger.fatal('Error while trying to read config file!\n'+err.name + ' - ' +err.message);
+    logger.fatal('Error while trying to read config file!\n'+err.toString());
     console.log(err);
     return;
   }
