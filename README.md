@@ -6,7 +6,10 @@ hack.chat is a minimal, distraction-free, accountless, logless, disappearing cha
 It also has an official web hosting at [hack.chat](https://hack.chat) where anyone can have a secure, distraction-free, accountless and logless chat with their group for any discussion, online meetings, or just for gossip with their internet-pals.
 This projects provides a simple electron based desktop client for the official hack.chat but it can be used for any hack.chat server through minor tweaks in the `main.js` script.
 
-
+# Dowload
+- Windows [exe](https://github.com/OpSimple/hackchat-electron/releases/download/0.1.5/hackchat.Setup.0.1.5.exe)
+- Linux   [deb](https://github.com/OpSimple/hackchat-electron/releases/download/0.1.5/hackchat-electron_0.1.5_amd64.deb)  [snap](https://github.com/OpSimple/hackchat-electron/releases/download/0.1.5/hackchat-electron_0.1.5_amd64.snap)  [appimage](https://github.com/OpSimple/hackchat-electron/releases/download/0.1.5/hackchat-0.1.5.AppImage)  [tar.xz](https://github.com/OpSimple/hackchat-electron/releases/download/0.1.5/hackchat-electron-0.1.5.tar.xz)
+- Mac     [dmg](https://github.com/OpSimple/hackchat-electron/releases/download/0.1.5/hackchat-0.1.5.dmg)
 
 Getting Started
 ===============
